@@ -5,10 +5,7 @@ const mongoose=require('mongoose');
 
 const ProfileTemplate=new mongoose.Schema({
     _UserId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserTabel' },
-    profile_img:    {
-        data: Buffer,
-        contentType: String
-    },
+    profile_img:{ type:mongoose.Schema.Types.ObjectId },
     FullName:{type:String },
     Email:{type:String },
     Details:{type:String},

@@ -42,27 +42,35 @@ function ProfilePage() {
 
         });
 
+        axios.get(`/profile/get_img/${my_cookie.get('ID')}`).then(res => {
+            console.log("Profile Image Loaded");
+            $("#current_profile_img").val("<img>")
+            .attr("src", res.data)
+            .css("width", "200px")
+        }
+        );
+
     });
-    //------------------------------------------------------------------
+    //------------------------------------------------------------------ 
     function UploadImageClick(event) {
         event.preventDefault();
- /*        const file = $("#img_upload_input")[0].files[0];
-        console.log(file);
-        axios.post('/profile/upload_img', file,
-            {
-                headers:
-                {
-                    'Content-Type': file.type
-                }
-            })
-            .then((res) => console.log(res));
- */
+        /*        const file = $("#img_upload_input")[0].files[0];
+               console.log(file);
+               axios.post('/profile/upload_img', file,
+                   {
+                       headers:
+                       {
+                           'Content-Type': file.type
+                       }
+                   })
+                   .then((res) => console.log(res));
+        */
 
         var formData = new FormData();
         var imagefile = document.querySelector('#img_upload_input');
         formData.append("file", imagefile.files[0]);
         console.log(formData.get("file"));
-        axios.post('/profile/upload_img', formData, {
+        axios.post(`/profile/upload_img/${my_cookie.get('ID')}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -114,6 +122,7 @@ function ProfilePage() {
 
                         <div className="container-md mx-auto">
                             <label>Profile Image </label>
+                            <img  id="current_profile_img" />
                             <input
                                 type="file"
                                 name="file"

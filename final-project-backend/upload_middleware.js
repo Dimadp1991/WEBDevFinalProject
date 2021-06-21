@@ -17,13 +17,16 @@ var storage = new GridFsStorage({
       return filename;
     }
 
+  //photos.files
+  //photos.chunks
     return {
       bucketName: "photos",
-      filename: `${Date.now()}-profileIMG-${file.originalname}`
+      filename: `${req.params.user_id}-profileIMG`,
     };
   }
 });
 
 var uploadFile = multer({ storage: storage }).single("file");
+
 var uploadFilesMiddleware = util.promisify(uploadFile);
 module.exports = uploadFilesMiddleware;
