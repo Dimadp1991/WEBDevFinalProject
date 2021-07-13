@@ -14,9 +14,17 @@ function ProfilePage() {
                 $('#FullName_text_input').val(profile.data.FullName);
                 $('#email_text_input').val(profile.data.Email);
                 $('#Phone_input').val(profile.data.PhoneNumber);
+                $('#details_input').val(profile.data.Details);
                 //check Gender
-                //$('#profile_img_show').attr("src", pic_data);
-                //console.log(data)
+                if (profile.data.Gender === 'Female') {
+                    $('#Female_checkbox').prop('checked', true);
+                    $('#Male_checkbox').prop('checked', false);
+                }
+                else {
+                    $('#Female_checkbox').prop('checked', false);
+                    $('#Male_checkbox').prop('checked', true);
+                }
+
 
             })
             .catch((err) => console.log('ERROR User Not Logged in Or Some Other Error'));
@@ -45,8 +53,8 @@ function ProfilePage() {
         axios.get(`/profile/get_img/${my_cookie.get('ID')}`).then(res => {
             console.log("Profile Image Loaded");
             $("#current_profile_img").val("<img>")
-            .attr("src", res.data)
-            .css("width", "200px")
+                .attr("src", res.data)
+                .css("width", "200px")
         }
         );
 
@@ -80,7 +88,20 @@ function ProfilePage() {
 
     function UpdateProfileDataClick(event) {
         event.preventDefault();
+        var gen = 'Male';
+        if ($('#Female_checkbox').prop("checked")) {
+            gen = 'Female';
+        }
 
+
+        axios.put(`/profile`, {
+            userID: my_cookie.get('ID'),
+            FullName: $('#FullName_text_input').val(),
+            Email: $('#email_text_input').val(),
+            Details: $('#details_input').val(),
+            PhoneNumber: $('#Phone_input').val(),
+            Gender: gen,
+        }).then((res) => console.log(res));
     }
 
 
@@ -122,7 +143,7 @@ function ProfilePage() {
 
                         <div className="container-md mx-auto">
                             <label>Profile Image </label>
-                            <img  id="current_profile_img" />
+                            <img id="current_profile_img" alt="" />
                             <input
                                 type="file"
                                 name="file"
@@ -135,10 +156,10 @@ function ProfilePage() {
                         </div>
 
                         <div className="checkbox">
-                            <label><input type="checkbox" value="" />Male</label>
+                            <label><input id="Male_checkbox" type="checkbox" value="" />Male</label>
                         </div>
                         <div className="checkbox">
-                            <label><input type="checkbox" value="" />Female</label>
+                            <label><input id="Female_checkbox" type="checkbox" value="" />Female</label>
                         </div>
 
                         <div>friends List Div </div>

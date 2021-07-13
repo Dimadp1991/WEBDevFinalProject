@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 //import axios from 'axios';
-import axios from '../../axios.config'
-import './SignUp.css'
+import axios from '../../axios.config';
+import './SignUp.css';
+import Cookies from 'universal-cookie';
 
 class SignUp extends Component {
   constructor() {
@@ -17,7 +18,7 @@ class SignUp extends Component {
     this.changeUsername = this.changeUsername.bind(this);
     this.changeEmail = this.changeEmail.bind(this);
     this.changePassword = this.changePassword.bind(this);
-    this.onSubmit=this.onSubmit.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   changeFullName(event) {
@@ -44,25 +45,47 @@ class SignUp extends Component {
     });
   }
 
-  onSubmit(event){
+  onSubmit(event) {
 
     event.preventDefault();
 
-    const registered={
-        fullName:this.state.fullName,
-        userName:this.state.userName,
-        email:this.state.email,
-        password:this.state.password
+    const registered = {
+      fullName: this.state.fullName,
+      userName: this.state.userName,
+      email: this.state.email,
+      password: this.state.password
     }
-    axios.post('/register',registered)
-    .then(res=>console.log(res.data))
 
- //  //show validation messages
+    const LoginForm = {
+      userName: registered.userName,
+      password: registered.password
+    }
+    axios.post('/register', registered)
+      .then(res => {
+        console.log(res.data)
+      }).then(res => {
+        axios.post('/login', LoginForm)
+          .then(res => {
+            //console.log(res.data);
+            const cookies = new Cookies();
+            cookies.set('ID', res.data._id, { path: '/' });
+            cookies.set('UserName', res.data.userName, { path: '/' });
+            window.location.reload().then(() => this.props.history.push("/"));
+
+          })
+          .catch((err) => console.log(err))
+
+
+
+      })
+
+
+    //  //show validation messages
   }
 
   render() {
     return (
-        
+
       <div>
         <div className="container-md mt-4">
           <div className="form-div">

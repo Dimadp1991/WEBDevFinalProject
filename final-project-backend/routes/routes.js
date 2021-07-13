@@ -29,12 +29,11 @@ router.post('/register', async (req, res) => {
     const { _id } = await login_user.save();
     const user_profile = new ProfileTemplate({
         _UserId: _id,
-        profile_img: '../public/profile-icon.png',
         FullName: req.body.fullName,
         Email: req.body.email,
         Details: '',
         PhoneNumber: '',
-        Gender: '',
+        Gender: 'Male',
         friends: [],
     })
 
@@ -49,7 +48,7 @@ router.post('/login', (req, res) => {
         userName: req.body.userName,
         password: req.body.password
     }).then((data) => {
-        //  console.log(data)
+        //console.log(data)
         return res.send({ _id: data._id, userName: data.userName })
     })
 
@@ -146,8 +145,21 @@ router.get('/profile_img', async (req, res) => {
 });
 
 
-router.put('/profile', (req, res) => {
-
+router.put('/profile', async (req, res) => {
+    const userID = req.body.userID;
+    // console.log('USER ID IS '+userID)
+    await ProfileTemplate.findOneAndUpdate({
+        _UserId: userID
+    }, {
+        FullName: req.body.FullName,
+        Email: req.body.Email,
+        Details: req.body.Details,
+        PhoneNumber: req.body.PhoneNumber,
+        Gender: req.body.Gender,
+    }).then((data) => {
+        //console.log(data)
+        return res.send('Profile Updated')
+    })
 
 })
 
