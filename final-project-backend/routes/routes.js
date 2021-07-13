@@ -6,7 +6,8 @@ const router = express.Router();
 const upload = require("../upload_middleware");
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const GridFsStream = require('gridfs-stream')
+const GridFsStream = require('gridfs-stream');
+const UserModel = require('../Models/UserModel');
 dotenv.config();
 router.get('/', (req, res) => {
     return res.send('<h1>THIS IS SERVER PAGE GO AWAY</h1>');
@@ -159,6 +160,35 @@ router.put('/profile', async (req, res) => {
     }).then((data) => {
         //console.log(data)
         return res.send('Profile Updated')
+    })
+
+})
+
+router.put('/add_friend', async (req, res) => {
+    const userID = req.body.userID;
+
+    await UserModel.findOne({
+        userName: req.body.FriendUserName
+    }).then((data) => {
+
+        //Check if hes not already my friend
+        ProfileTemplate.findOne({ _UserId: userID })
+            .then(my_profile => {
+                for (let friend of my_profile.friends) {
+                    if (friend === data._id) {
+                        return res.send('Friend Already Added Dont Add Him Again')
+                    }
+                }
+
+
+            })
+        //friend is mutual so friend both of the users
+        ProfileTemplate.findOneAndUpdate({ _UserId: userID }, { $push: { friends: data._id } })
+            .then(res => console.log(res));
+
+        ProfileTemplate.findOneAndUpdate({ _UserId: data._id }, { $push: { friends: userID } })
+            .then(res => console.log(res));
+        return res.send('Friend Added')
     })
 
 })

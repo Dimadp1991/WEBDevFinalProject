@@ -18,3 +18,49 @@
   border: solid 1rem rgb(118, 197, 0);
   box-shadow: 2px 2px 2px rgb(167, 150, 121);
 }
+
+#lb_Tag {
+  font-family: "Grandstander", cursive;
+  font-weight: bold;
+  font-size: 30px;
+  color: rgb(49, 177, 98);
+  text-align: center;
+  text-shadow: 2px 2px 2px rgb(63, 55, 41);
+}
+
+#update_button {
+  font-family: "Grandstander", cursive;
+  width: 200px;
+  font-size: 25px;
+}
+
+#update_button:hover {
+  color: rgb(0, 0, 0);
+}
+
+#upload_img_button {
+  font-family: "Grandstander", cursive;
+  width: 200px;
+  font-size: 25px;
+}
+
+#upload_img_button:hover {
+  background-color: rgb(110, 114, 117);
+  color: rgb(124, 255, 72);
+}
+
+#add_friend {
+  border-radius: 1rem;
+  border: solid 5px rgb(124, 255, 72);
+}
+#Friend_name_input {
+  width: 200px;
+  margin: auto !important;
+}
+
+#friend_img {
+  width: 200px;
+  border-radius: 10rem;
+  border: solid 1rem rgb(118, 197, 0);
+  box-shadow: 2px 2px 2px rgb(167, 150, 121);
+}

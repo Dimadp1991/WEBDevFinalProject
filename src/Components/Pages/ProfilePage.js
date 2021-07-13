@@ -5,7 +5,6 @@ import $ from 'jquery'
 import axios from '../../axios.config';
 function ProfilePage() {
     const my_cookie = new Cookies();
-
     //------------------------------------------------------------------
     $(document).ready(async function () {
         await axios.post('/profile/user', { userID: my_cookie.get('ID') })
@@ -15,6 +14,15 @@ function ProfilePage() {
                 $('#email_text_input').val(profile.data.Email);
                 $('#Phone_input').val(profile.data.PhoneNumber);
                 $('#details_input').val(profile.data.Details);
+
+                const friends_div = document.querySelector("#friends_list figure");
+                for (const friend of profile.data.friends) {
+                    axios.get(`/profile/get_img/${friend}`).then(res => {
+                        friends_div.innerHTML += (`<img id="friend_img" src="${res.data}" />`);
+                    });
+                }
+
+
                 //check Gender
                 if (profile.data.Gender === 'Female') {
                     $('#Female_checkbox').prop('checked', true);
@@ -51,7 +59,7 @@ function ProfilePage() {
         });
 
         axios.get(`/profile/get_img/${my_cookie.get('ID')}`).then(res => {
-            console.log("Profile Image Loaded");
+            //console.log("Profile Image Loaded");
             $("#current_profile_img").val("<img>")
                 .attr("src", res.data)
                 .css("width", "200px")
@@ -105,6 +113,14 @@ function ProfilePage() {
     }
 
 
+    function AddFriendClicked(event) {
+        event.preventDefault();
+        axios.put(`/add_friend`, {
+            userID: my_cookie.get('ID'),
+            FriendUserName: $('#Friend_name_input').val()
+        }).then((res) => console.log(res));
+    }
+
 
     return (
         <div className="container-md mx-auto">
@@ -112,26 +128,28 @@ function ProfilePage() {
             <div className="container-md mt-4">
                 <div className="form-div">
                     <form id="register_form_div">
-
+                        <label id="lb_Tag"> Name </label>
                         <input
                             type="text"
                             placeholder="Fullname"
                             id="FullName_text_input"
                             className="form-control form-group"
                         />
-
+                        <label id="lb_Tag"> Email </label>
                         <input
                             type="email"
                             placeholder="email"
                             id="email_text_input"
                             className="form-control form-group"
                         />
+                        <label id="lb_Tag"> Phone Number </label>
                         <input
                             type="text"
                             placeholder="Phone Number"
                             id="Phone_input"
                             className="form-control form-group"
                         />
+                        <label id="lb_Tag"> Describe Yourself </label>
                         <textarea
                             type="text"
                             rows={5}
@@ -142,7 +160,7 @@ function ProfilePage() {
                         />
 
                         <div className="container-md mx-auto">
-                            <label>Profile Image </label>
+                            <label id="lb_Tag">Profile Image </label>
                             <img id="current_profile_img" alt="" />
                             <input
                                 type="file"
@@ -161,8 +179,22 @@ function ProfilePage() {
                         <div className="checkbox">
                             <label><input id="Female_checkbox" type="checkbox" value="" />Female</label>
                         </div>
+                        <div id="add_friend">
+                            <label id="lb_Tag">Add Friend </label>
+                            <input
+                                type="text"
+                                placeholder="Friend Profile Name"
+                                id="Friend_name_input"
+                                className="form-control form-group"
+                            />
+                            <input id="update_button" type="submit" className="btn btn-success" value="Add" onClick={AddFriendClicked} />
+                        </div>
+                        <div id="friends_list">
+                            <label id="lb_Tag">friends List </label>
+                            <figure>
 
-                        <div>friends List Div </div>
+                            </figure>
+                        </div>
 
                         <input id="update_button" type="submit" className="btn btn-success" value="Update" onClick={UpdateProfileDataClick} />
                     </form>
