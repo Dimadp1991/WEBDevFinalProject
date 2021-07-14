@@ -1,13 +1,17 @@
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
-
-const MessageTemplate=new mongoose.Schema({
+const MessageTemplate = new mongoose.Schema({
     _UserId: { type: mongoose.Schema.Types.ObjectId, ref: 'UserTabel' },
-    MassageNum:{type:Number},
-    MassageContent:{
-        type:String,
+    MassageContent: {
+        type: String,
     },
+    Sent_By: { type: String },
+    date: {
+        type: Date,
+        default: Date.now
+    }
 
 })
-
-module.exports= mongoose.model('MassagesTabel',MessageTemplate);
+MessageTemplate.plugin(AutoIncrement, { inc_field: 'Message_Number' })
+module.exports = mongoose.model('MassagesTabel', MessageTemplate);

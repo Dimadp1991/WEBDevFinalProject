@@ -2,6 +2,7 @@
 const express = require('express');
 const UserTemplate = require('../Models/UserModel')
 const ProfileTemplate = require('../Models/ProfileModel')
+const MessageTemplate = require('../Models/MessageModel')
 const router = express.Router();
 const upload = require("../upload_middleware");
 const mongoose = require('mongoose');
@@ -67,6 +68,17 @@ router.post('/profile/user', async (req, res) => {
 })
 
 
+router.get('/profile/:user_id', async (req, res) => {
+    const userID = req.params.user_id;
+    //console.log('USER ID IS ' + userID)
+    await ProfileTemplate.findOne({
+        _UserId: userID
+    }).then((data) => {
+        //console.log(data)
+        return res.send(data)
+    })
+})
+
 //------------------------getting profile id from mongo db--------
 let gfs;
 const connect = mongoose.createConnection(process.env.DATABASE_ACCESS, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -112,7 +124,7 @@ router.get('/profile/get_img/:user_id', (req, res) => {
 
 
 //-----------------------------------------------------------------
-
+//upload profile img
 router.post('/profile/upload_img/:user_id', async (req, res) => {
 
     gfs.files.findOne({ filename: `${req.params.user_id}-profileIMG` }, (err, file) => {
@@ -140,12 +152,9 @@ router.post('/profile/upload_img/:user_id', async (req, res) => {
 
 });
 
-router.get('/profile_img', async (req, res) => {
 
 
-});
-
-
+//update profile data
 router.put('/profile', async (req, res) => {
     const userID = req.body.userID;
     // console.log('USER ID IS '+userID)
@@ -163,34 +172,51 @@ router.put('/profile', async (req, res) => {
     })
 
 })
-
+//add new friend 
 router.put('/add_friend', async (req, res) => {
     const userID = req.body.userID;
 
-    await UserModel.findOne({
-        userName: req.body.FriendUserName
-    }).then((data) => {
-
-        //Check if hes not already my friend
-        ProfileTemplate.findOne({ _UserId: userID })
-            .then(my_profile => {
-                for (let friend of my_profile.friends) {
-                    if (friend === data._id) {
-                        return res.send('Friend Already Added Dont Add Him Again')
-                    }
-                }
+    const friend_to_add = await UserModel.findOne({ userName: req.body.FriendUserName });
+    //console.log(friend_to_add)
+    //Check if hes not already my friend
+    const my_profile = await ProfileTemplate.findOne({ _UserId: userID });
 
 
-            })
-        //friend is mutual so friend both of the users
-        ProfileTemplate.findOneAndUpdate({ _UserId: userID }, { $push: { friends: data._id } })
-            .then(res => console.log(res));
+    for (let friend of my_profile.friends) {
+        if (String(friend) === String(friend_to_add._id)) {
+            return res.send('Friend Already Added Dont Add Him Again');
+        }
+    }
 
-        ProfileTemplate.findOneAndUpdate({ _UserId: data._id }, { $push: { friends: userID } })
-            .then(res => console.log(res));
-        return res.send('Friend Added')
+
+
+
+    //friend is mutual so friend both of the users
+    ProfileTemplate.findOneAndUpdate({ _UserId: userID }, { $push: { friends: friend_to_add._id } });
+
+    ProfileTemplate.findOneAndUpdate({ _UserId: friend_to_add._id }, { $push: { friends: userID } });
+    return res.send('Friend  Added ');
+})
+
+//post message for all of your friends
+router.post('/Messages', async (req, res) => {
+
+    const new_message = new MessageTemplate({
+        _UserId: req.body.userID,
+        MassageContent: req.body.massage_Content,
+        Sent_By: req.body.Sender_name
     })
 
+
+    await new_message.save();
+    return res.send('Message successfully Posted');
 })
+
+router.get('/Messages', async (req, res) => {
+    const message_list = await MessageTemplate.find();
+    return res.send(message_list);
+})
+
+
 
 module.exports = router;

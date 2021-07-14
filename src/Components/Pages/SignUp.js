@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from '../../axios.config';
 import './SignUp.css';
 import Cookies from 'universal-cookie';
-
+import history from '../../history';
 class SignUp extends Component {
   constructor() {
     super();
@@ -70,7 +70,8 @@ class SignUp extends Component {
             const cookies = new Cookies();
             cookies.set('ID', res.data._id, { path: '/' });
             cookies.set('UserName', res.data.userName, { path: '/' });
-            window.location.reload().then(() => this.props.history.push("/"));
+            history.push('/');
+            window.location.reload();
 
           })
           .catch((err) => console.log(err))

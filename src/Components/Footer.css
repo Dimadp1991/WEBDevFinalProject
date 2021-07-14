@@ -1,0 +1,13 @@
+#footer_div {
+  background: linear-gradient(90deg, rgb(80, 112, 57) 0%, rgb(26, 23, 23) 100%);
+  color: rgb(19, 211, 12);
+  text-shadow: 1px 1px 5px wheat;
+}
+
+footer {
+  position: fixed;
+  width: 100%;
+  margin: 0;
+  bottom: 0;
+  right: 0;
+}

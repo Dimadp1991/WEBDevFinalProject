@@ -6,13 +6,13 @@ import $ from 'jquery';
 import history from '../history';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faTimes, faBookReader } from '@fortawesome/free-solid-svg-icons'
-function Navbar( ) {
+function Navbar() {
 
     const [click, setClick] = useState(false);
-   
+
     //eslint-disable-next-line
     const user_coockie = new Cookies();
-    const [authenticated,setAuth]=useState(false);
+    const [authenticated, setAuth] = useState(false);
     const handleClick = () => setClick(!click);
     const closeMobileMenu = () => setClick(false);
 
@@ -25,9 +25,9 @@ function Navbar( ) {
     }
 
     useEffect(() => {
-        setAuth(user_coockie.get('ID')!=null);
+        setAuth(user_coockie.get('ID') != null);
         if (authenticated) {
-           
+
             $('#Login_link').css('display', 'none');
             $('#SignUp_link').css('display', 'none');
 
@@ -47,8 +47,8 @@ function Navbar( ) {
             $('#Messages_link').css('display', 'none');
         }
 
-   
-    },[authenticated,user_coockie]);
+
+    }, [authenticated, user_coockie]);
 
 
     return (
@@ -71,12 +71,12 @@ function Navbar( ) {
                         </Link>
                     </li>
                     <li>
-                        <Link to='/profile'  id="Profile_link" className='nav-links' onClick={closeMobileMenu}>
+                        <Link to='/profile' id="Profile_link" className='nav-links' onClick={closeMobileMenu}>
                             Profile
                         </Link>
                     </li>
                     <li>
-                        <Link to='/messages'  id="Messages_link" className='nav-links' onClick={closeMobileMenu}>
+                        <Link to='/Messages' id="Messages_link" className='nav-links' onClick={closeMobileMenu}>
                             Messages
                         </Link>
                     </li>
