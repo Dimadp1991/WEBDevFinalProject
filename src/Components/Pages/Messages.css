@@ -32,7 +32,7 @@
   margin-top: 50px;
 }
 
-#friend_img_msg {
+.friend_img_msg {
   float: left;
   width: 80px;
   border-radius: 10rem;

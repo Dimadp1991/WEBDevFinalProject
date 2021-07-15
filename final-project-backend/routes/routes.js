@@ -74,7 +74,7 @@ router.get('/profile/:user_id', async (req, res) => {
     await ProfileTemplate.findOne({
         _UserId: userID
     }).then((data) => {
-        //console.log(data)
+        // console.log(data)
         return res.send(data)
     })
 })
@@ -86,10 +86,11 @@ connect.once('open', () => {
     // The monitoring database is turned on, and the file access control is carried out through gridfs-stream middleware and the database
     gfs = GridFsStream(connect.db, mongoose.mongo)
     gfs.collection('photos')
+
 })
 
-router.get('/profile/get_img/:user_id', (req, res) => {
-    gfs.files.findOne({ filename: `${req.params.user_id}-profileIMG` }, (err, file) => {
+router.get('/profile/get_img/:user_id', async (req, res) => {
+    await gfs.files.findOne({ filename: `${req.params.user_id}-profileIMG` }, (err, file) => {
         if (!file || file.length === 0) {
             return res.send({ err: 'No File Exists' });
         } else {
@@ -98,6 +99,7 @@ router.get('/profile/get_img/:user_id', (req, res) => {
 
 
                 var read_stream = gfs.createReadStream(file.filename);
+
                 let file_buff = [];
                 read_stream.on('data', function (chunk) {
                     file_buff.push(chunk);
@@ -110,16 +112,38 @@ router.get('/profile/get_img/:user_id', (req, res) => {
                     file_buff = Buffer.concat(file_buff);
                     const img = `data:image/png;base64,${Buffer(file_buff).toString('base64')}`;
                     res.send(img);
+
                 });
 
 
-                //console.og(readstream.pipe(res));l
             } else {
                 res.send({ err: 'Not and image' });
             }
         }
     });
 });
+
+
+
+/* router.get('/get_all_img', (req, res) => {
+    gfs.files.find().toArray((err, files) => {
+        console.log(files)
+        if (!files || files.length === 0) {
+            return res.send({ err: 'No File Exists' });
+        }
+        // Check if is image
+
+        files.map(file => {
+            if (file.contentType === "image/jpeg" || file.contentType === "image/png") {
+
+            }
+
+        }
+
+
+
+    })
+}); */
 
 
 
@@ -192,9 +216,18 @@ router.put('/add_friend', async (req, res) => {
 
 
     //friend is mutual so friend both of the users
-    ProfileTemplate.findOneAndUpdate({ _UserId: userID }, { $push: { friends: friend_to_add._id } });
+    ProfileTemplate.findOneAndUpdate({ _UserId: userID }, { $addToSet: { friends: friend_to_add._id } }).then(res => {
 
-    ProfileTemplate.findOneAndUpdate({ _UserId: friend_to_add._id }, { $push: { friends: userID } });
+        // console.log(res);
+    }
+
+    );
+
+    ProfileTemplate.findOneAndUpdate({ _UserId: friend_to_add._id }, { $addToSet: { friends: userID } }).then(res => {
+
+        //console.log(res);
+    });
+
     return res.send('Friend  Added ');
 })
 

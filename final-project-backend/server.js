@@ -10,7 +10,7 @@ const PORT = 4000;
 dotenv.config();
 
 
-mongoose.connect(process.env.DATABASE_ACCESS,{ useNewUrlParser: true, useUnifiedTopology: true }, () => console.log('DATABASE CONNECTED'));
+mongoose.connect(process.env.DATABASE_ACCESS, { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log('DATABASE CONNECTED'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({

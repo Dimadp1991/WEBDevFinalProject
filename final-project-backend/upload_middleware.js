@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const util = require("util");
 const multer = require("multer");
-const {GridFsStorage} = require("multer-gridfs-storage");
+const { GridFsStorage } = require("multer-gridfs-storage");
 dotenv.config();
 
 
@@ -17,8 +17,8 @@ var storage = new GridFsStorage({
       return filename;
     }
 
-  //photos.files
-  //photos.chunks
+    //photos.files
+    //photos.chunks
     return {
       bucketName: "photos",
       filename: `${req.params.user_id}-profileIMG`,

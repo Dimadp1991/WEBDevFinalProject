@@ -16,9 +16,10 @@ function ProfilePage() {
                 $('#details_input').val(profile.data.Details);
 
                 const friends_div = document.querySelector("#friends_list figure");
-                for (const friend of profile.data.friends) {
-                    axios.get(`/profile/get_img/${friend}`).then(res => {
-                        friends_div.innerHTML += (`<img id="friend_img" src="${res.data}" />`);
+                for (let i = 0; i < profile.data.friends.length; i++) {
+                    axios.get(`/profile/get_img/${profile.data.friends[i]}`).then(res => {
+
+                        friends_div.innerHTML += (`<img class="friend_img" id="friend_img_${i}" src="${res.data}" />`);
                     });
                 }
 
@@ -60,6 +61,7 @@ function ProfilePage() {
 
         axios.get(`/profile/get_img/${my_cookie.get('ID')}`).then(res => {
             //console.log("Profile Image Loaded");
+            //console.log(res)
             $("#current_profile_img").val("<img>")
                 .attr("src", res.data)
                 .css("width", "200px")
