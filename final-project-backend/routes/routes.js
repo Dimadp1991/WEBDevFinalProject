@@ -56,7 +56,7 @@ router.post('/login', (req, res) => {
 
 })
 
-router.post('/profile/user', async (req, res) => {
+/* router.post('/profile/user', async (req, res) => {
     const userID = req.body.userID;
     // console.log('USER ID IS '+userID)
     await ProfileTemplate.findOne({
@@ -66,7 +66,7 @@ router.post('/profile/user', async (req, res) => {
         return res.send(data)
     })
 })
-
+ */
 
 router.get('/profile/:user_id', async (req, res) => {
     const userID = req.params.user_id;
@@ -77,6 +77,7 @@ router.get('/profile/:user_id', async (req, res) => {
         // console.log(data)
         return res.send(data)
     })
+
 })
 
 //------------------------getting profile id from mongo db--------
@@ -212,9 +213,6 @@ router.put('/add_friend', async (req, res) => {
         }
     }
 
-
-
-
     //friend is mutual so friend both of the users
     ProfileTemplate.findOneAndUpdate({ _UserId: userID }, { $addToSet: { friends: friend_to_add._id } }).then(res => {
 
@@ -230,6 +228,25 @@ router.put('/add_friend', async (req, res) => {
 
     return res.send('Friend  Added ');
 })
+
+//delete friend
+router.post('/delete_friend', async (req, res) => {
+    const friend_to_delete = req.body.friend_id_to_delete;
+    const userID = req.body.userID;
+    //console.log(friend_to_delete, userID)
+    ProfileTemplate.findOneAndUpdate({ _UserId: userID }, { $pull: { friends: friend_to_delete } }).then(res => {
+        // console.log(res);
+    });
+
+    ProfileTemplate.findOneAndUpdate({ _UserId: friend_to_delete }, { $pull: { friends: userID } }).then(res => {
+        //console.log(res);
+    });
+
+    return res.send('Friend  Deleted ')
+
+
+})
+
 
 //post message for all of your friends
 router.post('/Messages', async (req, res) => {

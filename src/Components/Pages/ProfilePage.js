@@ -1,44 +1,148 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './ProfilePage.css'
 import Cookies from 'universal-cookie';
 import $ from 'jquery'
 import axios from '../../axios.config';
+import DeleteForever from '@material-ui/icons/DeleteForever';
+import DeleteModal from '../DeleteModal'
 function ProfilePage() {
+    const [isOpen, SetIsOpen] = useState(false);
+    // eslint-disable-next-line
     const my_cookie = new Cookies();
-    //------------------------------------------------------------------
-    $(document).ready(async function () {
-        await axios.post('/profile/user', { userID: my_cookie.get('ID') })
-            .then((profile) => {
+    const [my_Profile, set_my_Profile] = useState(null)
+    const [dataFetched, SetdataFetch] = useState(false)
+    const [friends_profile_list, set_friends_list] = useState([])
+    const fetchData = async () => {
+        await axios.get(`/profile/${my_cookie.get('ID')}`).then((profile) => {
+            set_my_Profile(profile.data);
+            for (let i = 0; i < profile.data.friends.length; i++) {
 
-                $('#FullName_text_input').val(profile.data.FullName);
-                $('#email_text_input').val(profile.data.Email);
-                $('#Phone_input').val(profile.data.PhoneNumber);
-                $('#details_input').val(profile.data.Details);
+                axios.get(`/profile/${profile.data.friends[i]}`).then(friend_profile => {
+                    // console.log(i)
+                    set_friends_list(friends_profile_list => [...friends_profile_list, friend_profile.data])
 
-                const friends_div = document.querySelector("#friends_list figure");
-                for (let i = 0; i < profile.data.friends.length; i++) {
-                    axios.get(`/profile/get_img/${profile.data.friends[i]}`).then(res => {
+                });
+            }
 
-                        friends_div.innerHTML += (`<img class="friend_img" id="friend_img_${i}" src="${res.data}" />`);
-                    });
-                }
+            var uniqueFriends = [];
+            $.each(friends_profile_list, function (i, el) {
+                if ($.inArray(el, uniqueFriends) === -1) uniqueFriends.push(el);
+            });
+
+            set_friends_list(uniqueFriends);
+            SetdataFetch(true)
 
 
-                //check Gender
-                if (profile.data.Gender === 'Female') {
-                    $('#Female_checkbox').prop('checked', true);
-                    $('#Male_checkbox').prop('checked', false);
-                }
-                else {
-                    $('#Female_checkbox').prop('checked', false);
-                    $('#Male_checkbox').prop('checked', true);
-                }
 
+
+
+        })
+
+
+    };
+
+    useEffect(() => {
+        fetchData()
+
+        if (dataFetched) {
+            add_data_toForm();
+            SetImage_PreView();
+
+
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataFetched]);
+
+
+    function load_friend_images() {
+        for (let i = 0; i < friends_profile_list.length; i++) {
+            let s = "#friend_img_" + String(i);
+
+            axios.get(`/profile/get_img/${friends_profile_list[i]._UserId}`).then(res => {
+                $(s).attr("src", res.data)
+                //  friends_div.innerHTML += (`<img class="friend_img" id="friend_img_${i}" src="${res.data}" /> `);
 
             })
-            .catch((err) => console.log('ERROR User Not Logged in Or Some Other Error'));
+        }
+    }
 
 
+    function show_friend_list() {
+        //console.log(friends_profile_list)
+        let items = []
+
+
+
+        for (let i = 0; i < friends_profile_list.length; i++) {
+            let s = "friend_img_" + String(i);
+            items.push(<div key={i}>
+                <img className="friend_img" id={s} alt="" />
+                <label>{friends_profile_list[i].FullName}</label>
+                <DeleteForever id="Delete_friend_link" onClick={() => SetIsOpen(true)} />
+                <DeleteModal open={isOpen} Todelete={() => DeleteFriendClicked(i)} onClose={() => SetIsOpen(false)} /> </div>)
+
+
+
+        }
+
+        return (
+            <div>
+                {items}
+            </div>
+        )
+    }
+
+
+    function add_data_toForm() {
+
+        $('#FullName_text_input').val(my_Profile.FullName);
+        $('#email_text_input').val(my_Profile.Email);
+        $('#Phone_input').val(my_Profile.PhoneNumber);
+        $('#details_input').val(my_Profile.Details);
+
+        //check Gender
+        if (my_Profile.Gender === 'Female') {
+            $('#Female_checkbox').prop('checked', true);
+            $('#Male_checkbox').prop('checked', false);
+        }
+        else {
+            $('#Female_checkbox').prop('checked', false);
+            $('#Male_checkbox').prop('checked', true);
+
+
+        }
+
+
+
+
+    }
+    function DeleteFriendClicked(i) {
+        axios.post('/delete_friend', { friend_id_to_delete: friends_profile_list[i]._UserId, userID: my_cookie.get('ID') })
+            .then(res => console.log(res))
+
+
+    }
+    //------------------------------------------------------------------
+
+
+    /* 
+            if (my_Profile != null) {
+                for (let i = 0; i < my_Profile.friends.length; i++) {
+                    axios.get(`/profile/${my_Profile.friends[i]}`).then(friend_profile => {
+                        friends_profile_list[i] = friend_profile;
+     
+                    });
+                }
+                set_friends_list(friends_profile_list);
+            }
+            console.log(friends_profile_list) */
+
+    /*    const friends_div = document.querySelector("#friends_list");
+       */
+
+
+    function SetImage_PreView() {
         let imagesPreview = function (input, placeToInsertImagePreview) {
             if (input.files) {
                 let reader = new FileReader();
@@ -53,6 +157,7 @@ function ProfilePage() {
             }
 
         };
+
         $("#img_upload_input").on("change", function () {
             $("div.preview-images").empty();
             imagesPreview(this, "div.preview-images");
@@ -68,7 +173,13 @@ function ProfilePage() {
         }
         );
 
-    });
+
+
+
+
+    }
+
+
     //------------------------------------------------------------------ 
     function UploadImageClick(event) {
         event.preventDefault();
@@ -125,11 +236,14 @@ function ProfilePage() {
 
 
     return (
-        <div className="container-md mx-auto">
+
+        < div className="container-md mx-auto" >
             <h1 id="Welcome_header">{my_cookie.get('UserName')}'s &ensp;Profile</h1>
+
             <div className="container-md mt-4">
                 <div className="form-div">
-                    <form id="register_form_div">
+
+                    <form id="register_form_div"  >
                         <label id="lb_Tag"> Name </label>
                         <input
                             type="text"
@@ -191,20 +305,23 @@ function ProfilePage() {
                             />
                             <input id="update_button" type="submit" className="btn btn-success" value="Add" onClick={AddFriendClicked} />
                         </div>
-                        <div id="friends_list">
-                            <label id="lb_Tag">friends List </label>
-                            <figure>
+                        <div className="row mx-auto overflow-auto">
+                            <div className="mx-auto mt-3" id="friends_list">
+                                <label id="lb_Tag">friends List </label>
 
-                            </figure>
+                                {show_friend_list()}
+                                {load_friend_images()}
+
+                            </div>
                         </div>
 
                         <input id="update_button" type="submit" className="btn btn-success" value="Update" onClick={UpdateProfileDataClick} />
                     </form>
                 </div>
-            </div>
+            </div >
 
 
-        </div>
+        </div >
     )
 }
 

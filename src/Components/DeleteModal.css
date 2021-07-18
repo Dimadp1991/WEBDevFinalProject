@@ -1,0 +1,19 @@
+#q_label {
+  font-family: "Grandstander", cursive;
+  text-shadow: 2px 2px 5px rgb(88, 231, 83);
+  font-size: 25px;
+  text-align: center;
+  width: fit-content;
+}
+
+#btn_modal {
+  float: left;
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  font-family: "Grandstander", cursive;
+  text-shadow: 2px 2px 5px rgb(88, 231, 83);
+  font-size: 35px;
+  border-radius: 5rem;
+  text-align: center;
+}
