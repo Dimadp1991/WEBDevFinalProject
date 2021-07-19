@@ -47,8 +47,6 @@ function ProfilePage() {
         if (dataFetched) {
             add_data_toForm();
             SetImage_PreView();
-
-
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps

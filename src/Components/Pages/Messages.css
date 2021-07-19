@@ -34,17 +34,43 @@
 
 .friend_img_msg {
   float: left;
+
   width: 80px;
   border-radius: 10rem;
   border: solid 0.5rem rgb(118, 197, 0);
   box-shadow: 2px 2px 2px rgb(167, 150, 121);
 }
 
-#msg_name {
+.msg_name_tag {
   width: fit-content;
   font-family: "Grandstander", cursive;
   font-size: 20px;
   float: left;
+}
+.msg_eddit_tag {
+  width: 40px !important;
+  height: 40px !important;
+  float: left;
+  color: blue;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+.msg_eddit_tag :hover {
+  color: green;
+}
+.msg_del_tag {
+  width: 40px !important;
+  height: 40px !important;
+  float: left;
+
+  color: rgb(255, 166, 0);
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.msg_del_tag :hover {
+  color: red;
 }
 #h1_Posts {
   font-family: "Grandstander", cursive;

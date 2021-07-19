@@ -1,68 +1,134 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Messages.css';
 import Cookies from 'universal-cookie';
 import $ from 'jquery'
 import axios from '../../axios.config';
+import DeleteForever from '@material-ui/icons/DeleteForever';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteModal from '../DeleteModal'
+import UpdateModal from '../UpdateModal'
 
 function Messages() {
 
-
+    const [isOpenDel, SetIsOpenDel] = useState(false);
+    const [isOpenUp, SetIsOpenUp] = useState(false);
     const my_cookie = new Cookies();
-    /*  const [friends_list, SetFriendsList] = useState(null);
- 
-     useEffect(() => {
-       
-     }, []); */
+    const [my_Profile, set_my_Profile] = useState(null)
+    const [messages_list, SetMessagesList] = useState([]);
+    const [dataFetched, SetdataFetch] = useState(false)
 
-    $(document).ready(async function () {
-        axios.get(`/profile/${my_cookie.get('ID')}`).then(res => {
+    const fetchMessageData = async () => {
+        await axios.get(`/profile/${my_cookie.get('ID')}`).then(res => {
+            set_my_Profile(res.data);
             axios.get('/Messages')
-                .then((message_list) => {
+                .then((ml) => {
 
-                    // axios.get(`get_all_img`).then((res) => console.log(res));
+                    SetMessagesList(ml.data);
 
-                    for (let i = 0; i < message_list.data.length; i++) {
-                        let friend_flag = false;
-
-                        for (const friend of res.data.friends) {
-                            if (friend === message_list.data[i]._UserId) {
-                                friend_flag = true;
-                            }
-                        }
-
-
-                        //chekc if show message or not
-
-                        if (message_list.data[i]._UserId === my_cookie.get('ID') || friend_flag) {
-
-                            $('#all_firends_posts_div').append('<hr/>')
-                            $('#all_firends_posts_div').append(`  <lable id="msg_name">${message_list.data[i].Sent_By} </lable> <br/>`);
-                            $('#all_firends_posts_div').append(`<img class="friend_img_msg" id="friend_img_msg_${i}" src=""  /> <br/>`);
-                            $('#all_firends_posts_div').append(`<lable id="msg_content">${message_list.data[i].MassageContent} </lable> <br/>`)
-                            add_img(i, message_list.data[i]._UserId)
-
-
-                        }
-
-                        friend_flag = false;
-                    }
-
-
-                    $('#all_firends_posts_div').append(' <br/><br/><hr/>')
-
-                });
-
+                })
+            SetdataFetch(true)
         })
 
-    })
+    };
 
-    async function add_img(index, user_id) {
 
-        await axios.get(`/profile/get_img/${user_id}`).then(res => {
-            //console.log(res.data)
-            $(`#friend_img_msg_${index}`).attr('src', res.data);
-        }).catch(err => console.log(err))
 
+
+    useEffect(() => {
+        if (!dataFetched) {
+            fetchMessageData()
+
+        }
+
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    function DeleteMessageClicked(i) {
+        //add api call for delete massage
+
+        //Message_ID
+        axios.delete(`/Massages/${messages_list[i]._id}`).then(ret => console.log(ret))
+        window.location.reload()
+    }
+
+    function UpdateMessage(new_message, i) {
+        axios.put(`/Massages/${messages_list[i]._id}`, { massage_Content: new_message }).then(ret => console.log(ret))
+        window.location.reload()
+
+
+    }
+
+    function show_Messages() {
+        // axios.get(`get_all_img`).then((res) => console.log(res));
+        let items = []
+        //console.log(messages_list)
+        for (let i = 0; i < messages_list.length; i++) {
+            let friend_flag = false;
+
+            for (const friend of my_Profile.friends) {
+                if (friend === messages_list[i]._UserId) {
+                    friend_flag = true;
+                }
+            }
+
+
+            //chekc if show message or not
+
+            if (messages_list[i]._UserId === my_cookie.get('ID') || friend_flag) {
+                let s = "friend_msg_" + String(i);
+
+                if (friend_flag) {
+                    items.push(
+                        <div key={i}>
+                            <hr />
+                            <img className="friend_img_msg" id={s} alt="" />
+                            <label className="msg_name_tag">{messages_list[i].Sent_By}</label>
+                            <label id="msg_content">{messages_list[i].MassageContent} </label> <br />
+                            <hr />
+                        </div>)
+
+                }
+                else {
+                    items.push(
+                        <div key={i}>
+                            <hr />
+                            <img className="friend_img_msg" id={s} alt="" />
+                            <label className="msg_name_tag">{messages_list[i].Sent_By}</label>
+                            <label id="msg_content">{messages_list[i].MassageContent} </label> <br />
+                            <DeleteForever className="msg_del_tag" onClick={() => SetIsOpenDel(true)} />
+                            <DeleteModal open={isOpenDel} Todelete={() => DeleteMessageClicked(i)} onClose={() => SetIsOpenDel(false)} />
+                            <EditIcon className="msg_eddit_tag" onClick={() => SetIsOpenUp(true)}></EditIcon>
+                            <UpdateModal open={isOpenUp} ToUpdate={(updated_message) => UpdateMessage(updated_message, i)} onClose={() => SetIsOpenUp(false)} />
+                            <hr />
+                        </div >)
+
+
+                }
+
+
+
+
+            }
+
+            friend_flag = false;
+        }
+
+        return (
+            <div>
+                {items}
+            </div>
+        )
+
+    }
+
+    function add_images() {
+        for (let i = 0; i < messages_list.length; i++) {
+            axios.get(`/profile/get_img/${messages_list[i]._UserId}`).then(res => {
+                let s = "#friend_msg_" + String(i);
+                $(s).attr('src', res.data);
+            }).catch(err => console.log(err))
+        }
 
     }
 
@@ -91,7 +157,8 @@ function Messages() {
             </div>
             <div id="all_firends_posts_div" >
                 <h1 id="h1_Posts"> Posts</h1>
-
+                {show_Messages()}
+                {add_images()}
             </div>
 
 

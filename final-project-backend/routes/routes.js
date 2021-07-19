@@ -262,6 +262,23 @@ router.post('/Messages', async (req, res) => {
     return res.send('Message successfully Posted');
 })
 
+router.delete('/Massages/:Message_ID', async (req, res) => {
+    const MassageID = req.params.Message_ID;
+    MessageTemplate.findOneAndDelete({ _id: MassageID }).then(() => {
+        res.send('Message Deleted')
+    })
+
+})
+
+router.put('/Massages/:Message_ID', async (req, res) => {
+    const MassageID = req.params.Message_ID;
+    const Content_to_Update = req.body.massage_Content;
+    MessageTemplate.findByIdAndUpdate({ _id: MassageID }, { MassageContent: Content_to_Update }).then(() => {
+        res.send('Message Updated')
+    })
+
+})
+
 router.get('/Messages', async (req, res) => {
     const message_list = await MessageTemplate.find();
     return res.send(message_list);
