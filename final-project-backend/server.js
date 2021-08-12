@@ -6,18 +6,19 @@ const routesUrls = require('./routes/routes');
 const cors = require('cors');
 
 var path = require('path');
-const PORT = 4000;
+const PORT = process.env.PORT || 80
 dotenv.config();
 
 
 mongoose.connect(process.env.DATABASE_ACCESS, { useNewUrlParser: true, useUnifiedTopology: true }, () => console.log('DATABASE CONNECTED'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
+app.use(cors());
+/* app.use(cors({
+  origin: 'https://dimibook-ver1.herokuapp.com'
 
-
+})); */
+//origin: 'http://localhost:3000'
 
 
 app.use(express.static(path.join(__dirname, 'public')))
