@@ -16,6 +16,7 @@ function Messages() {
     const [my_Profile, set_my_Profile] = useState(null)
     const [messages_list, SetMessagesList] = useState([]);
     const [dataFetched, SetdataFetch] = useState(false)
+    const [IsAdmin, SetIsAdmin] = useState(false)
 
     const fetchMessageData = async () => {
         await axios.get(`/profile/${my_cookie.get('ID')}`).then(res => {
@@ -60,6 +61,51 @@ function Messages() {
     }
 
     function show_Messages() {
+        //check if user is admin 
+        //user admin admin to check
+        axios.post('/CheckAdmin', { userID: my_cookie.get('ID') }).then((res) => {
+            SetIsAdmin(res.data);
+
+        });
+
+        if (IsAdmin) {
+
+            let items = []
+            //console.log(messages_list)
+            for (let i = 0; i < messages_list.length; i++) {
+
+                let s = "friend_msg_" + String(i);
+                items.push(
+                    <div className="whol_div_msg" key={i}>
+                        <hr />
+                        <img className="friend_img_msg" id={s} alt="" />
+                        <label className="msg_name_tag">{messages_list[i].Sent_By}</label>
+                        <label id="msg_content">{messages_list[i].MassageContent} </label> <br />
+                        <DeleteForever className="msg_del_tag" onClick={() => SetIsOpenDel(true)} />
+                        <DeleteModal open={isOpenDel} Todelete={() => DeleteMessageClicked(i)} onClose={() => SetIsOpenDel(false)} />
+                        <EditIcon className="msg_eddit_tag" onClick={() => SetIsOpenUp(true)}></EditIcon>
+                        <UpdateModal open={isOpenUp} ToUpdate={(updated_message) => UpdateMessage(updated_message, i)} onClose={() => SetIsOpenUp(false)} />
+                        <hr />
+                    </div >)
+
+                var my_adminheight = $('#whool_page').height() + 200;
+
+
+                $('#whool_page').height(my_adminheight);
+
+            }
+
+
+            return (
+                <div>
+                    {items}
+                </div>
+            )
+
+        }
+
+
+
         // axios.get(`get_all_img`).then((res) => console.log(res));
         let items = []
         //console.log(messages_list)
@@ -80,7 +126,7 @@ function Messages() {
 
                 if (friend_flag) {
                     items.push(
-                        <div key={i}>
+                        <div className="whol_div_msg" key={i}>
                             <hr />
                             <img className="friend_img_msg" id={s} alt="" />
                             <label className="msg_name_tag">{messages_list[i].Sent_By}</label>
@@ -91,7 +137,7 @@ function Messages() {
                 }
                 else {
                     items.push(
-                        <div key={i}>
+                        <div className="whol_div_msg" key={i}>
                             <hr />
                             <img className="friend_img_msg" id={s} alt="" />
                             <label className="msg_name_tag">{messages_list[i].Sent_By}</label>
@@ -107,7 +153,10 @@ function Messages() {
                 }
 
 
+                var my_height = $('#whool_page').height() + 200;
 
+
+                $('#whool_page').height(my_height);
 
             }
 

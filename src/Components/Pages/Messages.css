@@ -56,6 +56,9 @@
   transition: all 0.5s;
 }
 
+.whol_div_msg {
+  margin-top: 100px;
+}
 .msg_eddit_tag :hover {
   color: green;
 }
@@ -95,5 +98,9 @@
   #add_new_post_input {
     font-family: "Grandstander", cursive;
     font-size: 20px;
+  }
+
+  .whol_div_msg {
+    margin-bottom: 100px;
   }
 }

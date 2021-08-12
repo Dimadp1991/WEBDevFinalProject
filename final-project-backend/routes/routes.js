@@ -285,5 +285,12 @@ router.get('/Messages', async (req, res) => {
 })
 
 
+router.post('/CheckAdmin', async (req, res) => {
+    const userID = req.body.userID;
+    const User = await UserTemplate.find({ _id: userID });
+    return res.send(User[0].IsAdmin);
+})
+
+
 
 module.exports = router;
