@@ -1,8 +1,8 @@
 import React from 'react'
 import $ from 'jquery'
 import ReactDom from 'react-dom'
-import './UpdateModal.css'
-export default function DeleteModal({ open, onClose, ToUpdate }) {
+import './DeleteMessageModal.css'
+export default function DeleteMessageModal({ open, children, onClose, Todelete }) {
     const MODAL_STYLES = {
         position: 'fixed',
         top: '50%',
@@ -24,26 +24,17 @@ export default function DeleteModal({ open, onClose, ToUpdate }) {
         backgroundColor: 'rgba(0, 0, 0, .7)',
         zIndex: 1000
     }
-
-    /*     function textChanged() {
-          
-            console.log($("[name='input_message']").val());
-        } */
     if (!open) { return null }
 
-    $('#btn_modal_up').removeAttr('disabled');
+    $('#btn_modal').removeAttr('disabled');
     return ReactDom.createPortal(
         <>
             <div style={OVERLAY_STYLES} />
             <div className="container-md align-content-center " style={MODAL_STYLES}>
-                <label id="q_label_up"> Enter Message To Update </label>
+                <label id="q_label"> Would you Like to Delete Message ? </label>
                 <br />
-                <textarea id="message_input" name="input_message" ></textarea>
-                <button id="btn_modal_up" className="btn-outline-success" onClick={() => {
-                    ToUpdate(($("[name='input_message']").val()));
-                    onClose();
-                }}>Update Message</button>
-                <button id="btn_modal_up" className="btn-outline-danger" onClick={() => { onClose(); }}>close</button>
+                <button id="btn_modal" className="btn-danger" onClick={onClose} >NO</button>
+                <button id="btn_modal" className="btn-outline-success" onClick={() => { Todelete(); onClose() }}>Yes</button>
 
             </div>
         </>,

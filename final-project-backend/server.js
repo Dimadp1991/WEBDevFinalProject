@@ -6,7 +6,7 @@ const routesUrls = require('./routes/routes');
 const cors = require('cors');
 
 var path = require('path');
-const PORT = process.env.PORT || 80
+const PORT = process.env.PORT || 5000
 dotenv.config();
 
 

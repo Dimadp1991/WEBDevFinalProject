@@ -50,8 +50,13 @@ router.post('/login', (req, res) => {
         userName: req.body.userName,
         password: req.body.password
     }).then((data) => {
-        //console.log(data)
-        return res.send({ _id: data._id, userName: data.userName })
+        if (data != null) {
+            return res.send({ _id: data._id, userName: data.userName });
+        }
+        else {
+            return res.send(false);
+        }
+
     })
 
 })
@@ -264,7 +269,7 @@ router.post('/Messages', async (req, res) => {
 
 router.delete('/Massages/:Message_ID', async (req, res) => {
     const MassageID = req.params.Message_ID;
-    MessageTemplate.findOneAndDelete({ _id: MassageID }).then(() => {
+    await MessageTemplate.findOneAndDelete({ _id: MassageID }).then(() => {
         res.send('Message Deleted')
     })
 
@@ -273,7 +278,9 @@ router.delete('/Massages/:Message_ID', async (req, res) => {
 router.put('/Massages/:Message_ID', async (req, res) => {
     const MassageID = req.params.Message_ID;
     const Content_to_Update = req.body.massage_Content;
-    MessageTemplate.findByIdAndUpdate({ _id: MassageID }, { MassageContent: Content_to_Update }).then(() => {
+    //console.log(MassageID);
+    //console.log(Content_to_Update);
+    await MessageTemplate.findByIdAndUpdate({ _id: MassageID }, { MassageContent: Content_to_Update }).then(() => {
         res.send('Message Updated')
     })
 

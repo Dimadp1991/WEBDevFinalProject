@@ -5,18 +5,20 @@ import $ from 'jquery'
 import axios from '../../axios.config';
 import DeleteForever from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
-import DeleteModal from '../DeleteModal'
-import UpdateModal from '../UpdateModal'
+import DeleteModal from '../DeleteMessageModal';
+import UpdateModal from '../UpdateModal';
 
 function Messages() {
 
     const [isOpenDel, SetIsOpenDel] = useState(false);
     const [isOpenUp, SetIsOpenUp] = useState(false);
+    const [MessageFocused, SetMessageFocus] = useState(null);
     const my_cookie = new Cookies();
-    const [my_Profile, set_my_Profile] = useState(null)
+    const [my_Profile, set_my_Profile] = useState(null);
     const [messages_list, SetMessagesList] = useState([]);
-    const [dataFetched, SetdataFetch] = useState(false)
-    const [IsAdmin, SetIsAdmin] = useState(false)
+    const [dataFetched, SetdataFetch] = useState(false);
+    const [IsAdmin, SetIsAdmin] = useState(false);
+
 
     const fetchMessageData = async () => {
         await axios.get(`/profile/${my_cookie.get('ID')}`).then(res => {
@@ -45,17 +47,27 @@ function Messages() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    function DeleteMessageClicked(i) {
+    function DeleteMessageClicked() {
         //add api call for delete massage
-
+        let j = parseInt(MessageFocused);
         //Message_ID
-        axios.delete(`/Massages/${messages_list[i]._id}`).then(ret => console.log(ret))
-        window.location.reload()
+        axios.delete(`/Massages/${messages_list[j]._id}`).then((ret) => {
+            //   console.log(ret)
+            window.location.reload();
+
+        });
+
     }
 
-    function UpdateMessage(new_message, i) {
-        axios.put(`/Massages/${messages_list[i]._id}`, { massage_Content: new_message }).then(ret => console.log(ret))
-        window.location.reload()
+    function UpdateMessage(new_message) {
+        // console.log(MessageFocused);
+        //console.log(new_message);
+        let j = parseInt(MessageFocused);
+        axios.put(`/Massages/${messages_list[j]._id}`, { massage_Content: new_message }).then((ret) => {
+            console.log(ret)
+            window.location.reload();
+
+        });
 
 
     }
@@ -73,7 +85,8 @@ function Messages() {
             let items = []
             //console.log(messages_list)
             for (let i = 0; i < messages_list.length; i++) {
-
+                let ic_id = 'up' + String(i);
+                let del_id = 'dl' + String(i);
                 let s = "friend_msg_" + String(i);
                 items.push(
                     <div className="whol_div_msg" key={i}>
@@ -81,10 +94,8 @@ function Messages() {
                         <img className="friend_img_msg" id={s} alt="" />
                         <label className="msg_name_tag">{messages_list[i].Sent_By}</label>
                         <label id="msg_content">{messages_list[i].MassageContent} </label> <br />
-                        <DeleteForever className="msg_del_tag" onClick={() => SetIsOpenDel(true)} />
-                        <DeleteModal open={isOpenDel} Todelete={() => DeleteMessageClicked(i)} onClose={() => SetIsOpenDel(false)} />
-                        <EditIcon className="msg_eddit_tag" onClick={() => SetIsOpenUp(true)}></EditIcon>
-                        <UpdateModal open={isOpenUp} ToUpdate={(updated_message) => UpdateMessage(updated_message, i)} onClose={() => SetIsOpenUp(false)} />
+                        <DeleteForever className="msg_del_tag" id={del_id} onClick={() => { SetMessageFocus(del_id.slice(2, 3)); SetIsOpenDel(true); }} />
+                        <EditIcon className="msg_eddit_tag" id={ic_id} onClick={() => { SetMessageFocus(del_id.slice(2, 3)); SetIsOpenUp(true); }}></EditIcon>
                         <hr />
                     </div >)
 
@@ -123,6 +134,8 @@ function Messages() {
 
             if (messages_list[i]._UserId === my_cookie.get('ID') || friend_flag) {
                 let s = "friend_msg_" + String(i);
+                let ic_id = 'up' + String(i);
+                let del_id = 'dl' + String(i);
 
                 if (friend_flag) {
                     items.push(
@@ -142,10 +155,8 @@ function Messages() {
                             <img className="friend_img_msg" id={s} alt="" />
                             <label className="msg_name_tag">{messages_list[i].Sent_By}</label>
                             <label id="msg_content">{messages_list[i].MassageContent} </label> <br />
-                            <DeleteForever className="msg_del_tag" onClick={() => SetIsOpenDel(true)} />
-                            <DeleteModal open={isOpenDel} Todelete={() => DeleteMessageClicked(i)} onClose={() => SetIsOpenDel(false)} />
-                            <EditIcon className="msg_eddit_tag" onClick={() => SetIsOpenUp(true)}></EditIcon>
-                            <UpdateModal open={isOpenUp} ToUpdate={(updated_message) => UpdateMessage(updated_message, i)} onClose={() => SetIsOpenUp(false)} />
+                            <DeleteForever className="msg_del_tag" id={del_id} onClick={() => { SetMessageFocus(del_id.slice(2, 3)); SetIsOpenDel(true); }} />
+                            <EditIcon className="msg_eddit_tag" id={ic_id} onClick={() => { SetMessageFocus(del_id.slice(2, 3)); SetIsOpenUp(true); }}></EditIcon>
                             <hr />
                         </div >)
 
@@ -210,7 +221,8 @@ function Messages() {
                 {add_images()}
             </div>
 
-
+            <UpdateModal open={isOpenUp} ToUpdate={(new_message) => UpdateMessage(new_message)} onClose={() => SetIsOpenUp(false)} />
+            <DeleteModal open={isOpenDel} Todelete={() => DeleteMessageClicked()} onClose={() => SetIsOpenDel(false)} />
 
         </div>
     )

@@ -69,6 +69,15 @@ class LoginPage extends Component {
     }
     axios.post('/login', LoginForm)
       .then(res => {
+
+        if (res.data === false) {
+          $('#UserNotExisMessage').text('User Not Exist Please Sign Up');
+          return;
+        }
+        else {
+          $('#UserNotExisMessage').text('');
+        }
+
         //console.log(res.data);
         const cookies = new Cookies();
         cookies.set('ID', res.data._id, { path: '/' });
@@ -116,6 +125,7 @@ class LoginPage extends Component {
               />
               <p className="_valid" id="pass_valid"></p>
               <input id="reg_button" type="submit" className="btn btn-success" value="Login" />
+              <p className="_valid" id="UserNotExisMessage"></p>
             </form>
           </div>
         </div>
