@@ -220,7 +220,10 @@ function ProfilePage() {
             Details: $('#details_input').val(),
             PhoneNumber: $('#Phone_input').val(),
             Gender: gen,
-        }).then((res) => console.log(res));
+        }).then((res) => {
+            window.location.reload();
+            // console.log(res);
+        });
     }
 
 
@@ -303,6 +306,7 @@ function ProfilePage() {
                             />
                             <input id="update_button" type="submit" className="btn btn-success" value="Add" onClick={AddFriendClicked} />
                         </div>
+                        <input id="update_button" type="submit" className="btn btn-success" value="Update" onClick={UpdateProfileDataClick} />
                         <div className="row mx-auto overflow-auto">
                             <div className="mx-auto mt-3" id="friends_list">
                                 <label id="lb_Tag">friends List </label>
@@ -313,7 +317,7 @@ function ProfilePage() {
                             </div>
                         </div>
 
-                        <input id="update_button" type="submit" className="btn btn-success" value="Update" onClick={UpdateProfileDataClick} />
+
                     </form>
                 </div>
             </div >

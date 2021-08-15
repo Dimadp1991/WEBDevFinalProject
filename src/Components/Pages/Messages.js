@@ -53,6 +53,9 @@ function Messages() {
         //Message_ID
         axios.delete(`/Massages/${messages_list[j]._id}`).then((ret) => {
             //   console.log(ret)
+            var my_height = $('#whool_page').height() - 200;
+            $('#whool_page').height(my_height);
+
             window.location.reload();
 
         });
