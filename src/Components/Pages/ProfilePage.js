@@ -117,7 +117,10 @@ function ProfilePage() {
     }
     function DeleteFriendClicked(i) {
         axios.post('/delete_friend', { friend_id_to_delete: friends_profile_list[i]._UserId, userID: my_cookie.get('ID') })
-            .then(res => console.log(res))
+            .then(res => {
+                $('#friend_deleted_message').text('Friend Deleted');
+                console.log(res);
+            })
 
 
     }
@@ -170,10 +173,6 @@ function ProfilePage() {
                 .css("width", "200px")
         }
         );
-
-
-
-
 
     }
 
@@ -232,7 +231,11 @@ function ProfilePage() {
         axios.put(`/add_friend`, {
             userID: my_cookie.get('ID'),
             FriendUserName: $('#Friend_name_input').val()
-        }).then((res) => console.log(res));
+        }).then((res) => {
+            $('#friend_added_message').text('Friend Added')
+            //console.log(res);
+
+        });
     }
 
 
@@ -305,6 +308,8 @@ function ProfilePage() {
                                 className="form-control form-group"
                             />
                             <input id="update_button" type="submit" className="btn btn-success" value="Add" onClick={AddFriendClicked} />
+                            <div id="friend_added_message"></div>
+                            <div id="friend_deleted_message"></div>
                         </div>
                         <input id="update_button" type="submit" className="btn btn-success" value="Update" onClick={UpdateProfileDataClick} />
                         <div className="row mx-auto overflow-auto">

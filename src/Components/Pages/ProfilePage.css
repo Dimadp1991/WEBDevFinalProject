@@ -28,6 +28,24 @@
   text-shadow: 2px 2px 2px rgb(63, 55, 41);
 }
 
+#friend_added_message {
+  font-family: "Grandstander", cursive;
+  font-weight: bold;
+  font-size: 20px;
+  color: green;
+  text-align: center;
+  text-shadow: rgb(49, 177, 98);
+}
+
+#friend_deleted_message {
+  font-family: "Grandstander", cursive;
+  font-weight: bold;
+  font-size: 20px;
+  color: red;
+  text-align: center;
+  text-shadow: green;
+}
+
 #update_button {
   font-family: "Grandstander", cursive;
   width: 200px;
